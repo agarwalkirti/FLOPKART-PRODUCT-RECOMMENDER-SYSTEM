@@ -1,0 +1,4 @@
+.env
+venv/
+FLOPKART_RECOMMENDER.egg-info/
+logs/
