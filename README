@@ -185,7 +185,7 @@ kubectl port-forward svc/flask-service 5000:80 --address 0.0.0.0
 ```bash
 ## Open another VM terminal 
 
-kubectl create namespace monitoring
+kubectl create namespace flopkart-monitoring
 
 kubectl get ns
 
@@ -198,10 +198,10 @@ kubectl apply -f grafana/grafana-deployment.yaml
 
 ## Check target health also..
 ## On IP:9090
-kubectl port-forward --address 0.0.0.0 svc/prometheus-service -n monitoring 9090:9090
+kubectl port-forward --address 0.0.0.0 svc/prometheus-service -n flopkart-monitoring 9090:9090
 
 ## Username:Pass --> admin:admin
-kubectl port-forward --address 0.0.0.0 svc/grafana-service -n monitoring 3000:3000
+kubectl port-forward --address 0.0.0.0 svc/grafana-service -n flopkart-monitoring 3000:3000
 
 
 
