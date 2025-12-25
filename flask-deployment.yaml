@@ -22,7 +22,7 @@ spec:
           - containerPort: 5000
         envFrom:
           - secretRef:
-              name: llmops-secrets
+              name: flopkart-secrets
 ---
 apiVersion: v1
 kind: Service

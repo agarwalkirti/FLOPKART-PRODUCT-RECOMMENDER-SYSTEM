@@ -156,7 +156,7 @@ eval $(minikube docker-env)
 
 docker build -t flask-app:latest .
 
-kubectl create secret generic llmops-secrets \
+kubectl create secret generic flopkart-secrets \
   --from-literal=GROQ_API_KEY="" \
   --from-literal=ASTRA_DB_APPLICATION_TOKEN="" \
   --from-literal=ASTRA_DB_KEYSPACE="default_keyspace" \
