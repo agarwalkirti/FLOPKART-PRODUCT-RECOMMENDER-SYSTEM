@@ -190,11 +190,11 @@ kubectl create namespace flopkart-monitoring
 kubectl get ns
 
 
-kubectl apply -f prometheus/prometheus-configmap.yaml
+kubectl apply -f prometheus-configmap.yaml
 
-kubectl apply -f prometheus/prometheus-deployment.yaml
+kubectl apply -f prometheus-deployment.yaml
 
-kubectl apply -f grafana/grafana-deployment.yaml
+kubectl apply -f grafana-deployment.yaml
 
 ## Check target health also..
 ## On IP:9090
