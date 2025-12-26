@@ -210,7 +210,7 @@ Go to Settings > Data Sources > Add Data Source
 
 Choose Prometheus
 
-URL: http://prometheus-service.monitoring.svc.cluster.local:9090
+URL: http://prometheus-service.flopkart-monitoring.svc.cluster.local:9090
 
 Click Save & Test
 
