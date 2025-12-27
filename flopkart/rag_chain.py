@@ -1,12 +1,10 @@
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_core.runnables import RunnablePassthrough
+from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.chat_history import BaseChatMessageHistory
-from langchain_core.documents import Document
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.runnables import RunnableLambda
 
 from flopkart.config import Config
 
@@ -31,7 +29,7 @@ class RAGChainBuilder:
         # Rewrite question using history
         contextualize_prompt = ChatPromptTemplate.from_messages([
             ("system", "Rewrite the user's question as a standalone question."),
-            MessagesPlaceholder(variable_name="chat_history"),
+            MessagesPlaceholder("chat_history"),
             ("human", "{input}")
         ])
 
@@ -43,15 +41,14 @@ class RAGChainBuilder:
 
         # Retrieve documents
         retrieve_chain = RunnableLambda(
-            lambda x: retriever.invoke(x["standalone_question"])
+            lambda standalone_question: retriever.invoke(standalone_question)
         )
 
-        # QA prompt
+        # QA prompt (NO chat_history here)
         qa_prompt = ChatPromptTemplate.from_messages([
             ("system",
-             "You are an e-commerce assistant. Answer strictly using the context.\n\nCONTEXT:\n{context}"),
-            MessagesPlaceholder(variable_name="chat_history"),
-            ("human", "{input}")
+             "You are an e-commerce assistant. Answer strictly using the context.\n\n"
+             "CONTEXT:\n{context}\n\nQUESTION:\n{input}")
         ])
 
         qa_chain = (
@@ -60,20 +57,20 @@ class RAGChainBuilder:
             | StrOutputParser()
         )
 
+        # Compose RAG chain
         rag_chain = (
-            {
-                "standalone_question": contextualize_chain,
-                "input": RunnablePassthrough(),
-                "chat_history": RunnablePassthrough()
-            }
+            RunnablePassthrough.assign(
+                standalone_question=contextualize_chain
+            )
             | RunnablePassthrough.assign(
-                context=lambda x: retrieve_chain.invoke(x)
+                context=lambda x: retrieve_chain.invoke(x["standalone_question"])
             )
             | RunnablePassthrough.assign(
                 answer=qa_chain
             )
         )
 
+        # Attach message history (ONLY place where history is handled)
         return RunnableWithMessageHistory(
             rag_chain,
             self._get_history,
